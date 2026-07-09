@@ -6,7 +6,6 @@ from rustypot import Scs0009PyController
 #Side
 Side = 1 # 1=> Right Hand // 2=> Left Hand
 
-
 #Speed
 MaxSpeed = 7
 CloseSpeed = 3
@@ -15,16 +14,20 @@ CloseSpeed = 3
 MiddlePos = [3, 0, -5, -8, -2, 5, -12, 0] # replace values by your calibration results
 
 c = Scs0009PyController(
-        serial_port="COM11",
+        serial_port="/dev/ttyACM0",
         baudrate=1000000,
         timeout=0.5,
     )
 
-
+def sid(i):
+    # logical ID: 1..8
+    # right hand: 1..8
+    # left hand: 11..18
+    return i + 10 if Side == 2 else i
 
 def main():
     
-    c.write_torque_enable(1, 1)  #1 = On / 2 = Off / 3 = Free
+    c.write_torque_enable(sid(1), 1)  #1 = On / 2 = Off / 3 = Free
     t0 = time.time()
 
     while True:
@@ -231,50 +234,51 @@ def Fuck():
         Move_Middle (-35, 35, MaxSpeed)
         Move_Ring (90, -90, MaxSpeed)
         Move_Thumb (75, 0, MaxSpeed)
-  
-def Move_Index (Angle_1,Angle_2,Speed):
-    
-    c.write_goal_speed(1, Speed)
+        
+def Move_Index(Angle_1, Angle_2, Speed):
+    c.write_goal_speed(sid(1), Speed)
     time.sleep(0.0002)
-    c.write_goal_speed(2, Speed)
+    c.write_goal_speed(sid(2), Speed)
     time.sleep(0.0002)
-    Pos_1 = np.deg2rad(MiddlePos[0]+Angle_1)
-    Pos_2 = np.deg2rad(MiddlePos[1]+Angle_2)
-    c.write_goal_position(1, Pos_1)
-    c.write_goal_position(2, Pos_2)
+
+    Pos_1 = np.deg2rad(MiddlePos[0] + Angle_1)
+    Pos_2 = np.deg2rad(MiddlePos[1] + Angle_2)
+
+    c.write_goal_position(sid(1), Pos_1)
+    c.write_goal_position(sid(2), Pos_2)
     time.sleep(0.005)
 
 def Move_Middle(Angle_1,Angle_2,Speed):    
-    c.write_goal_speed(3, Speed)
+    c.write_goal_speed(sid(3), Speed)
     time.sleep(0.0002)
-    c.write_goal_speed(4, Speed)
+    c.write_goal_speed(sid(4), Speed)
     time.sleep(0.0002)
     Pos_1 = np.deg2rad(MiddlePos[2]+Angle_1)
     Pos_2 = np.deg2rad(MiddlePos[3]+Angle_2)
-    c.write_goal_position(3, Pos_1)
-    c.write_goal_position(4, Pos_2)
+    c.write_goal_position(sid(3), Pos_1)
+    c.write_goal_position(sid(4), Pos_2)
     time.sleep(0.005)
 
 def Move_Ring(Angle_1,Angle_2,Speed):    
-    c.write_goal_speed(5, Speed)
+    c.write_goal_speed(sid(5), Speed)
     time.sleep(0.0002)
-    c.write_goal_speed(6, Speed)
+    c.write_goal_speed(sid(6), Speed)
     time.sleep(0.0002)
     Pos_1 = np.deg2rad(MiddlePos[4]+Angle_1)
     Pos_2 = np.deg2rad(MiddlePos[5]+Angle_2)
-    c.write_goal_position(5, Pos_1)
-    c.write_goal_position(6, Pos_2)
+    c.write_goal_position(sid(5), Pos_1)
+    c.write_goal_position(sid(6), Pos_2)
     time.sleep(0.005)
 
 def Move_Thumb(Angle_1,Angle_2,Speed):    
-    c.write_goal_speed(7, Speed)
+    c.write_goal_speed(sid(7), Speed)
     time.sleep(0.0002)
-    c.write_goal_speed(8, Speed)
+    c.write_goal_speed(sid(8), Speed)
     time.sleep(0.0002)
     Pos_1 = np.deg2rad(MiddlePos[6]+Angle_1)
     Pos_2 = np.deg2rad(MiddlePos[7]+Angle_2)
-    c.write_goal_position(7, Pos_1)
-    c.write_goal_position(8, Pos_2)
+    c.write_goal_position(sid(7), Pos_1)
+    c.write_goal_position(sid(8), Pos_2)
     time.sleep(0.005)
 
 
